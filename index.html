@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LOCALIZADOR DE EQUIPAMENTOS</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    background: #f5f5f5;
+  }
+  nav {
+    background: #2196f3;
+    padding: 10px;
+    text-align: center;
+  }
+  nav a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  nav a:hover {
+    text-decoration: underline;
+  }
+  .container {
+    max-width: 600px;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .search-box {
+    position: relative;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 40px 10px 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #999;
+    pointer-events: none;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+  }
+  li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+  }
+  li:hover {
+    background-color: #eee;
+  }
+  .detalhes {
+    padding: 15px;
+    background-color: #e3f2fd;
+    border-left: 5px solid #2196f3;
+    margin-top: 5px;
+  }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="TREINAMENTOS.html">TREINAMENTOS</a>
+    <a href="diagrama.html">DIAGRAMAS</a>
+  </nav>
+
+  <div class="container">
+    <h1>LOCALIZADOR DE EQUIPAMENTOS</h1>
+    <div class="search-box">
+      <input type="text" id="search" placeholder="Digite a tag do equipamento..." />
+      <span class="search-icon">🔍</span>
+    </div>
+    <ul id="resultados"></ul>
+  </div>
+
+  <script>
+    // Lista de equipamentos (exemplo)
+    const equipamentos = [
+      { tag: 'MB-3209A', painel: 'CCM-3501', coluna: '03', gaveta: '02' },
+      { tag: 'MB-3210B', painel: 'CCM-3502', coluna: '05', gaveta: '01' },
+      { tag: 'INV-500A', painel: 'CCM-3503', coluna: '02', gaveta: '03' },
+      { tag: 'TF-3512', painel: 'CCM-3501', coluna: '04', gaveta: '01' },
+      { tag: 'MB-9413A', painel: 'CCM-3502', coluna: '06', gaveta: '03' },
+    ];
+
+    const input = document.getElementById("search");
+    const resultados = document.getElementById("resultados");
+
+    input.addEventListener("input", () => {
+      const termoBruto = input.value.toLowerCase();
+      const termo = termoBruto.replace(/[-\s]/g, ""); // remove hífen e espaço
+
+      resultados.innerHTML = "";
+
+      if (termo === "") return; // não mostra nada se o campo estiver vazio
+
+      // filtra ignorando hífen
+      const filtrados = equipamentos.filter(eq =>
+        eq.tag.replace(/-/g, "").toLowerCase().includes(termo)
+      );
+
+      filtrados.forEach(eq => {
+        const li = document.createElement("li");
+        li.textContent = eq.tag;
+
+        li.addEventListener("click", () => {
+          // fecha detalhes já abertos
+          document.querySelectorAll(".detalhes").forEach(el => el.remove());
+
+          // verifica se já existe detalhe aberto no mesmo item
+          const detalheAberto = li.querySelector(".detalhes");
+          if (detalheAberto) {
+            detalheAberto.remove();
+            return;
+          }
+
+          // cria e mostra o detalhe
+          const detalhesDiv = document.createElement("div");
+          detalhesDiv.classList.add("detalhes");
+          detalhesDiv.innerHTML = `
+            <strong>Tag:</strong> ${eq.tag}<br>
+            <strong>Painel:</strong> ${eq.painel}<br>
+            <strong>Coluna:</strong> ${eq.coluna}<br>
+            <strong>Gaveta:</strong> ${eq.gaveta}
+          `;
+          li.appendChild(detalhesDiv);
+        });
+
+        resultados.appendChild(li);
+      });
+
+      // caso não encontre nenhum
+      if (filtrados.length === 0) {
+        resultados.innerHTML = "<li>Nenhum equipamento encontrado.</li>";
+      }
+    });
+  </script>
+</body>
+</html>
